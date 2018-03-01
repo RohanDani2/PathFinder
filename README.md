@@ -1,2 +1,2 @@
 # PathFinder
-Finds its way through a maze using own implemented algorithm
+A program called pathfinder that can solve mazes like the following of arbitrary size. Black squares are considered to be walls and cannot be occupied, white squares are open cells, and a single red square is the starting location. Allowed moves are left, right, up, and down only (no diagonal moves) within the bounds of the maze if a cell is not occupied. The program will find the nearest exit if a solution exists and mark it with the color green. The nearest exit is defined as a white square on the maze border requiring the smallest number of moves to reach it from the starting location. Finds its way through a maze using own implemented algorithm
