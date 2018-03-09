@@ -7,8 +7,8 @@
 
 struct coordinateData
 {
-	int row;
-	int column;
+	size_t row;
+	size_t column;
 	bool validReturn;
 };
 
@@ -54,7 +54,7 @@ coordinateData checkExplore(coordinateData currentState,  Image<Pixel> image) {
 	coordinateData nexData;
 	//nexData.row = -1;
 	//nexData.column = -1;
-	bool isBlue;
+	//bool isBlue;
 	while (true)
 	{
 		Pixel col_current = image(startWidth, startHeight);
@@ -251,8 +251,8 @@ int main(int argc, char *argv[])
 	}
 	int startWidth = -1;
 	int startHeight = -1; //to check how many red dots, setting negative to start off
-	for (int i = 0; i < inputImage.width(); i++) {
-		for (int j = 0; j < inputImage.height(); j++) {
+	for (size_t i = 0; i < inputImage.width(); i++) {
+		for (size_t j = 0; j < inputImage.height(); j++) {
 		
 			if (inputImage(i, j) == RED) {
 
