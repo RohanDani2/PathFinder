@@ -5,16 +5,14 @@
 #include <iostream>
 #include "pathfinder.h"
 
-struct coordinateData
-{
+struct coordinateData {
 	size_t row;
 	size_t column;
 	bool validReturn;
 };
 
 
-bool isDone(coordinateData coords, Image<Pixel> image)
-{
+bool isDone(coordinateData coords, Image<Pixel> image) {
 	if (coords.column >= image.width() || coords.row >= image.height() || coords.column == 0 || coords.row == 0) {
 		std::cout << "reach limit";
 		return true;
@@ -22,8 +20,7 @@ bool isDone(coordinateData coords, Image<Pixel> image)
 	return false;
 }
 
-void colorprint(Pixel &col_current, int &retflag)
-{
+void colorprint(Pixel &col_current, int &retflag) {
 	retflag = 1;
 	if (col_current == BLACK)
 	{
@@ -54,9 +51,7 @@ coordinateData checkExplore(coordinateData currentState,  Image<Pixel> image) {
 	coordinateData nexData;
 	//nexData.row = -1;
 	//nexData.column = -1;
-	//bool isBlue;
-	while (true)
-	{
+	while (true) {
 		Pixel col_current = image(startWidth, startHeight);
 		Pixel col_down = image(startWidth, startHeight - 1);
 		Pixel col_up = image(startWidth, startHeight + 1);
@@ -75,56 +70,48 @@ coordinateData checkExplore(coordinateData currentState,  Image<Pixel> image) {
 		std::cout << "\nright"; colorprint(col_right, retflag);;
 		std::cout << "\nIn Loop" << __LINE__;
 		
-		if (col_current == BLACK || col_current == WHITE || col_current == RED)
-		{
+		if (col_current == BLACK || col_current == WHITE || col_current == RED) {
 
-			if (col_down == WHITE)
-			{
+			if (col_down == WHITE) {
 				startHeight--;
 				break;
 			}
 			std::cout << "\nIn Loop" << __LINE__;
-			if (col_up == WHITE )
-			{
+			if (col_up == WHITE ) {
 				startHeight++;
 				break;
 			}
 			std::cout << "\nIn Loop" << __LINE__;
 
-			if (col_left == WHITE )
-			{
+			if (col_left == WHITE ) {
 				startWidth--;
 				break;
 			}
 			std::cout << "\nIn Loop" << __LINE__;
-			if (col_right == WHITE)
-			{
+
+			if (col_right == WHITE) {
 				startWidth++;
 				break;
 			}
 			std::cout << "\nIn Loop" << __LINE__;
 		
-			if (col_down == BLUE)
-			{
+			if (col_down == BLUE) {
 				startHeight--;
 				break;
 			}
 			std::cout << "\nIn Loop" << __LINE__;
-			if (col_up == BLUE)
-			{
+			if (col_up == BLUE) {
 				startHeight++;
 				break;
 			}
 			std::cout << "\nIn Loop" << __LINE__;
 
-			if (col_left == BLUE)
-			{
+			if (col_left == BLUE) {
 				startWidth--;
 				break;
 			}
 			std::cout << "\nIn Loop" << __LINE__;
-			if (col_right == BLUE)
-			{
+			if (col_right == BLUE) {
 				startWidth++;
 				break;
 			}
@@ -133,43 +120,12 @@ coordinateData checkExplore(coordinateData currentState,  Image<Pixel> image) {
 			
 		}
 
-		/*
-		if (image(startWidth, startHeight - 1) == WHITE && (image(startWidth, startHeight - 1) != BLUE && image(startWidth, startHeight - 1) != BLACK)){
-			startHeight--;
-			break;
-			//frontier.pushFront(currentState);
-			//image(startWidth, startHeight) = BLUE;
-		}
-		else if (image(startWidth, startHeight + 1) == WHITE  && image(startWidth, startHeight + 1) != BLUE  && image(startWidth, startHeight + 1) != BLACK){
-			startHeight++;
-			break;
-			//frontier.pushFront(currentState);
-			//image(startWidth, startHeight) = BLUE;
-		}
-		else if (image(startWidth - 1, startHeight) == WHITE  && image(startWidth - 1, startHeight) != BLUE  && image(startWidth - 1, startHeight) != BLACK){
-			startWidth--;
-			break;
-			//frontier.pushFront(currentState);
-			//image(startWidth, startHeight) = BLUE;
-		}
-
-		else if (image(startWidth + 1, startHeight) == WHITE && image(startWidth + 1, startHeight) != BLUE && image(startWidth + 1, startHeight) != BLACK) {
-			startWidth++;
-			break;
-			//frontier.pushFront(currentState);
-			//image(startWidth, startHeight) = BLUE;
-		}
-		else {
-			break;
-		}
-		*/
-		//now move the best way based on what is white in front you and keep in mind best Moves maybe
+    //now move the best way based on what is white in front you and keep in mind best Moves maybe
 	//follow pseudocode, do it while giving colors a definition 
 	}
 	nexData.column = startWidth;
 	nexData.row = startHeight;
 	std::cout <<"\n next data: "<< startWidth << "," << startHeight << "\n";
-	//image(startWidth, startHeight) = BLUE;
 	return nexData;
 }
 
@@ -177,8 +133,6 @@ coordinateData checkExplore(coordinateData currentState,  Image<Pixel> image) {
 coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> image) {
 	Deque<coordinateData> frontier;
 	Deque<coordinateData> explored;
-	//Deque<coordinateData> tempFrontier;
-	//Deque<coordinateData> tempExplored;
 
 	coordinateData currentState;
 	coordinateData NextState;
@@ -190,7 +144,6 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 
 	std::cout << "\n" << __LINE__ << "   " << startWidth << "," << startHeight << "\n";  //give me the first spot of where it is traversered 
 	while (true) {
-	
 		if (frontier.isEmpty()) { //if it is empty 
 			currentState.validReturn = false; //if there is no good return, then give false, this is where it is breaking 
 			return currentState;
@@ -200,6 +153,10 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 		explored.pushFront(currentState); //pushing the current state that is explored
 		
 		//check red
+		if (image(currentState.column, currentState.row) == RED) { //RED a second time 
+			image(currentState.column, currentState.row) == BLUE;
+		}
+
 		if (isDone(currentState, image)) { //if complete 
 			currentState.validReturn = true;
 			image(currentState.column, currentState.row) = GREEN; //then set the pixel to green 
@@ -208,21 +165,18 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 		else {
 			NextState = checkExplore(currentState, image); //next state of struct current data stores the new Width and Height based off current state 
 			
-			if (NextState.column == currentState.column && NextState.row == currentState.row)  //if the next state column and row is equal to current state row and column 
-			{
+			if (NextState.column == currentState.column && NextState.row == currentState.row) {  //if the next state column and row is equal to current state row and column 
 				std::cout << "\nPop out\n";
 				currentState = frontier.front(); //then front the item 
-				if (image(currentState.column, currentState.row) == RED) {
+				if (image(currentState.column, currentState.row) == RED) { //RED a second time 
+					image(currentState.column, currentState.row) == BLUE;
 					NextState = checkExplore(currentState, image);
 					currentState = NextState;
 					frontier.pushBack(currentState);
-					continue;
-					//RED a second time 
 				}
 				frontier.popFront(); //and remove it 
 			}
-			else
-			{
+			else {
 				image(currentState.column, currentState.row) = BLUE; //otherwise print it as blue 
 				std::cout << "\nPush out\n";
 				std::cout << "\npushing NextState state into frontier" << NextState.column << "  " << NextState.row << "\n"; //then print the new column and row that has been explored 
@@ -235,8 +189,7 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 	}
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
 	if (argc != 3) {
 		std::cerr << "Error: invalid number of arguments\n\n";
 		return EXIT_FAILURE;
@@ -251,9 +204,8 @@ int main(int argc, char *argv[])
 	}
 	int startWidth = -1;
 	int startHeight = -1; //to check how many red dots, setting negative to start off
-	for (size_t i = 0; i < inputImage.width(); i++) {
-		for (size_t j = 0; j < inputImage.height(); j++) {
-		
+	for (size_t i = 0; i < inputImage.width(); ++i) {
+		for (size_t j = 0; j < inputImage.height(); ++j) {
 			if (inputImage(i, j) == RED) {
 
 				if (startWidth >= 0 || startHeight >= 0) { //more than 1 red dot
@@ -263,34 +215,6 @@ int main(int argc, char *argv[])
 				startWidth = i;
 				startHeight = j;
 			}
-			/*else
-			if (inputImage(i, j) == GREEN)
-			{
-				std::cout << "Green";
-			}
-			else
-			if (inputImage(i, j) == BLUE)
-			{
-				std::cout << "BLUE";
-			}
-			else
-			if (inputImage(i, j) == BLACK)
-			{
-				std::cout << "BLACK";
-			}
-			else
-				if (inputImage(i, j) == WHITE)
-				{
-					std::cout << "WHITE";
-				}*/
-			/*
-			else if (inputImage(i, j) != BLACK || inputImage(i, j) != WHITE) {
-
-				
-				std::cerr <<i<<j <<"Error: the input maze image contains colors other than black, white, or red\n\n";
-				//return EXIT_FAILURE;
-			}*/
-	
 		}
 	}
 	if (startWidth == -1 || startHeight == -1) {
@@ -314,5 +238,4 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 	return EXIT_SUCCESS;
-
 }
