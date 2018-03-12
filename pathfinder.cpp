@@ -48,9 +48,6 @@ void colorprint(Pixel &col_current, int &retflag) {
 coordinateData checkExplore(coordinateData currentState,  Image<Pixel> image) {
 	int startWidth = currentState.column;
 	int startHeight = currentState.row;
-	coordinateData nexData;
-	//nexData.row = -1;
-	//nexData.column = -1;
 	while (true) {
 		Pixel col_current = image(startWidth, startHeight);
 		Pixel col_down = image(startWidth, startHeight - 1);
@@ -123,10 +120,10 @@ coordinateData checkExplore(coordinateData currentState,  Image<Pixel> image) {
     //now move the best way based on what is white in front you and keep in mind best Moves maybe
 	//follow pseudocode, do it while giving colors a definition 
 	}
-	nexData.column = startWidth;
-	nexData.row = startHeight;
+	currentState.column = startWidth;
+	currentState.row = startHeight;
 	std::cout <<"\n next data: "<< startWidth << "," << startHeight << "\n";
-	return nexData;
+	return currentState;
 }
 
 
@@ -139,23 +136,26 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 	currentState.column = startWidth;  //set the column to the start Width
 	currentState.row = startHeight;  //set the row to the start height 
 
-
+	if (image(currentState.column, currentState.row) == RED) {
+		image(currentState.column, currentState.row) == BLUE;
+	}
 	frontier.pushFront(currentState); //for beginning push of current state on red 
-
-	std::cout << "\n" << __LINE__ << "   " << startWidth << "," << startHeight << "\n";  //give me the first spot of where it is traversered 
+	Pixel col_current = image(startWidth, startHeight);
+	int retflag = 1;
+	std::cout << "current"; colorprint(col_current, retflag);; 
+	std::cout << "\n" << __LINE__ << "   " << startWidth << "," << startHeight << "\n";  //give me the first spot of where it traversered 
 	while (true) {
 		if (frontier.isEmpty()) { //if it is empty 
 			currentState.validReturn = false; //if there is no good return, then give false, this is where it is breaking 
 			return currentState;
 		}
-	
-		std::cout << "\ncurrent state : "<< currentState.column<<", " << currentState.row; //gives me current state beg. of while loop 
-		explored.pushFront(currentState); //pushing the current state that is explored
 		
-		//check red
-		if (image(currentState.column, currentState.row) == RED) { //RED a second time 
+		if (image(currentState.column, currentState.row) == RED) {
 			image(currentState.column, currentState.row) == BLUE;
 		}
+		std::cout << "\ncurrent state : "<< currentState.column<<", " << currentState.row; //gives me current state beg. of while loop 
+		
+		//check red
 
 		if (isDone(currentState, image)) { //if complete 
 			currentState.validReturn = true;
@@ -164,24 +164,24 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 		}
 		else {
 			NextState = checkExplore(currentState, image); //next state of struct current data stores the new Width and Height based off current state 
-			
+			frontier.pushFront(NextState);
 			if (NextState.column == currentState.column && NextState.row == currentState.row) {  //if the next state column and row is equal to current state row and column 
 				std::cout << "\nPop out\n";
 				currentState = frontier.front(); //then front the item 
-				if (image(currentState.column, currentState.row) == RED) { //RED a second time 
-					image(currentState.column, currentState.row) == BLUE;
-					NextState = checkExplore(currentState, image);
-					currentState = NextState;
-					frontier.pushBack(currentState);
-				}
-				frontier.popFront(); //and remove it 
+				//if (image(currentState.column, currentState.row) == RED) { //RED a second time 
+				//	NextState = checkExplore(currentState, image);
+				//	currentState = NextState;
+				//	frontier.pushFront(currentState);
+				//}
+				//frontier.popFront(); //and remove it 
 			}
 			else {
-				image(currentState.column, currentState.row) = BLUE; //otherwise print it as blue 
+				image(NextState.column, NextState.row) = BLUE; //otherwise print it as blue 
 				std::cout << "\nPush out\n";
 				std::cout << "\npushing NextState state into frontier" << NextState.column << "  " << NextState.row << "\n"; //then print the new column and row that has been explored 
-				frontier.pushFront(currentState); //then pushfront the current state that needs to be explored 
-				currentState = NextState; //and set current state to next state that is explored 
+				currentState = NextState; //and set current state to next state that has been explored 
+				frontier.popFront();
+				explored.pushFront(currentState); //pushing the current state that is explored
 			}
 			std::cout << "pushing new state into frontier"<< currentState.column <<"  " << currentState.row<<"\n"; //print new state that is in frontier 
 		}
