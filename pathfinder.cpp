@@ -13,8 +13,10 @@ struct coordinateData {
 
 
 bool isDone(coordinateData coords, Image<Pixel> image) {
-	if (coords.column >= image.width() || coords.row >= image.height() || coords.column == 0 || coords.row == 0) {
+	if (coords.column >= image.width() || coords.row >= image.height() 
+		|| coords.column == 0 || coords.row == 0) {
 		std::cout << "reach limit";
+		std::cout << coords.column << "\ncoords column" << image.width() << "\nimagewidth";
 		return true;
 	}
 	return false;
@@ -51,14 +53,14 @@ coordinateData checkExplore(coordinateData currentState, Image<Pixel> image) {
 	Pixel col_up = image(startWidth, startHeight + 1);
 	Pixel col_left = image(startWidth - 1, startHeight);
 	Pixel col_right = image(startWidth + 1, startHeight);
-	colorprint(col_current);
-
+	
+	/*colorprint(col_current);
 	std::cout << "\ndown"; colorprint(col_down);;
 	std::cout << "\nup"; colorprint(col_up);;
 	std::cout << "\nleft"; colorprint(col_left);;
 
 	std::cout << "\nright"; colorprint(col_right);;
-	std::cout << "\nIn Loop" << __LINE__;
+	std::cout << "\nIn Loop" << __LINE__;*/
 
 	if (col_current == WHITE || col_current == RED) {
 		if (col_down == WHITE) {
@@ -76,21 +78,6 @@ coordinateData checkExplore(coordinateData currentState, Image<Pixel> image) {
 		else if (col_right == WHITE) {
 			startWidth++;
 			std::cout << "\ncol right" << __LINE__;
-		}
-		else if (col_down == BLUE) {
-			startHeight--;
-			std::cout << "\nIn Loop" << __LINE__;
-		}
-		else if (col_up == BLUE) {
-			startHeight++;
-			std::cout << "\nIn Loop" << __LINE__;
-		}
-		else if (col_left == BLUE) {
-			startWidth--;
-			std::cout << "\nIn Loop" << __LINE__;
-		}
-		else if (col_right == BLUE) {
-			startWidth++;
 		}
 		std::cout << "\ncheckExplore ifstatement" << __LINE__;
 	}
@@ -113,17 +100,21 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 	currentState.row = startHeight;  //set the row to the start height 
 
 	explored.push_front(currentState); //for beginning push of current state on red 
+	if (image(currentState.column, currentState.row) == RED) {
+		image(currentState.column, currentState.row) == BLUE;
+	}
 	Pixel col_current = image(startWidth, startHeight);
-	std::cout << "current"; 
-	colorprint(col_current); //gives the color of the state
-	std::cout << "\n" << __LINE__ << "   " << startWidth << "," << startHeight << "\n";  //give me the first spot of where it traversered 
+	//std::cout << "current"; 
+	//colorprint(col_current); //gives the color of the state
+	//std::cout << "\n" << __LINE__ << "   " << startWidth << "," << startHeight << "\n";  //give me the first spot of where it traversered 
 	nextState = checkExplore(currentState, image);
 	frontier.push_front(nextState);
+	currentState = nextState;
 	if (image(currentState.column, currentState.row) == RED) {
 		image(currentState.column, currentState.row) == BLUE;
 	}
 
-	while (!isDone) {
+	while (true) {
 		std::cout << "\ncurrent state : " << currentState.column << ", " 
 			<< currentState.row; //gives me current state beg. of while loop
 		if (frontier.empty()) { //if it is empty 
@@ -141,26 +132,25 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 			return currentState;
 		}
 		else {
-			currentState = nextState;
-			nextState = checkExplore(currentState, image); //next state of struct current data stores the new Width and Height based off current state 
-			frontier.push_front(nextState);
-			if (nextState.column == currentState.column && nextState.row == currentState.row) {  //if the next state column and row is equal to current state row and column 
+			frontier.pop_front();
+			explored.push_front(currentState);
+			nextState = checkExplore(currentState, image); //next state of struct current data stores the new Width and Height
+			if (nextState.column == currentState.column 
+				&& nextState.row == currentState.row) {  //if the next state column and row is equal to current state row and column 
 				std::cout << "\nInside No choices Part\n";
 				currentState = explored.front(); //move current state back to previous state
 				continue;
 			}
 			else {
-				image(nextState.column, nextState.row) = BLUE; //otherwise print it as blue 
-				std::cout << "\nPush out\n";
-				std::cout << "\npushing NextState state into frontier" << nextState.column << "  " << nextState.row << "\n"; //then print the new column and row that has been explored 
-				currentState = nextState; //and set current state to next state that has been explored 
-				frontier.pop_front();
-				explored.push_front(currentState); //pushing the current state that is explored
+				frontier.push_front(nextState);
+				currentState = nextState;
+				image(currentState.column, currentState.row) = BLUE; //otherwise print it as blue 
 			}
 			std::cout << "pushing new state into frontier"<< currentState.column <<"  " << currentState.row<<"\n"; //print new state that is in frontier 
 		}
 		
 	}
+	return currentState;
 }
 
 int main(int argc, char *argv[]) {
