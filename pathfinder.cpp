@@ -54,15 +54,15 @@ coordinateData checkExplore(coordinateData currentState, Image<Pixel> image) {
 	Pixel col_left = image(startWidth - 1, startHeight);
 	Pixel col_right = image(startWidth + 1, startHeight);
 	
-	/*colorprint(col_current);
+	colorprint(col_current);
 	std::cout << "\ndown"; colorprint(col_down);;
 	std::cout << "\nup"; colorprint(col_up);;
 	std::cout << "\nleft"; colorprint(col_left);;
 
 	std::cout << "\nright"; colorprint(col_right);;
-	std::cout << "\nIn Loop" << __LINE__;*/
+	std::cout << "\nIn Loop" << __LINE__;
 
-	if (col_current == WHITE || col_current == RED) {
+	if (col_current == BLUE || col_current == RED || col_current == WHITE) {
 		if (col_down == WHITE) {
 			startHeight--;
 			std::cout << "\ncol down" << __LINE__;
@@ -79,7 +79,6 @@ coordinateData checkExplore(coordinateData currentState, Image<Pixel> image) {
 			startWidth++;
 			std::cout << "\ncol right" << __LINE__;
 		}
-		std::cout << "\ncheckExplore ifstatement" << __LINE__;
 	}
 	//now move the best way based on what is white in front you and keep in mind best Moves maybe
 	//follow pseudocode, do it while giving colors a definition 
@@ -96,17 +95,20 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 
 	coordinateData currentState;
 	coordinateData nextState;
+
 	currentState.column = startWidth;  //set the column to the start Width
 	currentState.row = startHeight;  //set the row to the start height 
+
+	Pixel col_current = image(currentState.column, currentState.row);
+	Pixel col_down = image(currentState.column, currentState.row - 1);
+	Pixel col_up = image(currentState.column, currentState.row + 1);
+	Pixel col_left = image(currentState.column - 1, currentState.row);
+	Pixel col_right = image(currentState.column + 1, currentState.row);
 
 	explored.push_front(currentState); //for beginning push of current state on red 
 	if (image(currentState.column, currentState.row) == RED) {
 		image(currentState.column, currentState.row) == BLUE;
 	}
-	Pixel col_current = image(startWidth, startHeight);
-	//std::cout << "current"; 
-	//colorprint(col_current); //gives the color of the state
-	//std::cout << "\n" << __LINE__ << "   " << startWidth << "," << startHeight << "\n";  //give me the first spot of where it traversered 
 	nextState = checkExplore(currentState, image);
 	frontier.push_front(nextState);
 	currentState = nextState;
@@ -134,18 +136,22 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 		else {
 			frontier.pop_front();
 			explored.push_front(currentState);
-			nextState = checkExplore(currentState, image); //next state of struct current data stores the new Width and Height
+			nextState = checkExplore(currentState, image); //stores the new Width and Height
 			if (nextState.column == currentState.column 
-				&& nextState.row == currentState.row) {  //if the next state column and row is equal to current state row and column 
+				&& nextState.row == currentState.row) {  
 				std::cout << "\nInside No choices Part\n";
-				currentState = explored.front(); //move current state back to previous state
-				continue;
+				std::cout << "\ncurrent state : " << currentState.column << ", "
+					<< currentState.row;
+				while (col_down != WHITE || col_up != WHITE || col_left != WHITE || col_right != WHITE) {
+					for (auto it = explored.size() - 1; it != 0; it--) {
+						currentState = explored[it];
+					}
+					nextState = checkExplore(currentState, image);
+				}
 			}
-			else {
-				frontier.push_front(nextState);
-				currentState = nextState;
-				image(currentState.column, currentState.row) = BLUE; //otherwise print it as blue 
-			}
+			frontier.push_front(nextState);
+			currentState = nextState;
+			image(currentState.column, currentState.row) = BLUE; //otherwise print it as blue 
 			std::cout << "pushing new state into frontier"<< currentState.column <<"  " << currentState.row<<"\n"; //print new state that is in frontier 
 		}
 		
@@ -185,7 +191,7 @@ int main(int argc, char *argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	coordinateData endResult = breadthfirstSearch(startWidth,startHeight,inputImage);
+	coordinateData endResult = breadthfirstSearch(startWidth, startHeight,inputImage);
 
 	if (endResult.validReturn == false) {
 		std::cerr << "Error: didn't work\n\n";
