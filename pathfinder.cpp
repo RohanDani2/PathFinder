@@ -61,22 +61,21 @@ coordinateData checkExplore(coordinateData currentState, Image<Pixel> image) {
 	std::cout << "\nIn Loop" << __LINE__;
 
 	if (col_current == WHITE || col_current == RED) {
-
 		if (col_down == WHITE) {
 			startHeight--;
-			std::cout << "\ncol up Loop" << __LINE__;
+			std::cout << "\ncol down" << __LINE__;
 		}
 		else if (col_up == WHITE) {
 			startHeight++;
-			std::cout << "\nIn Loop" << __LINE__;
+			std::cout << "\ncol up" << __LINE__;
 		}
 		else if (col_left == WHITE) {
 			startWidth--;
-			std::cout << "\nIn Loop" << __LINE__;
+			std::cout << "\ncol left" << __LINE__;
 		}
 		else if (col_right == WHITE) {
 			startWidth++;
-			std::cout << "\nIn Loop" << __LINE__;
+			std::cout << "\ncol right" << __LINE__;
 		}
 		else if (col_down == BLUE) {
 			startHeight--;
@@ -90,10 +89,10 @@ coordinateData checkExplore(coordinateData currentState, Image<Pixel> image) {
 			startWidth--;
 			std::cout << "\nIn Loop" << __LINE__;
 		}
-		if (col_right == BLUE) {
+		else if (col_right == BLUE) {
 			startWidth++;
 		}
-		std::cout << "\nIn Loop" << __LINE__;
+		std::cout << "\ncheckExplore ifstatement" << __LINE__;
 	}
 	//now move the best way based on what is white in front you and keep in mind best Moves maybe
 	//follow pseudocode, do it while giving colors a definition 
@@ -118,14 +117,15 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 	std::cout << "current"; 
 	colorprint(col_current); //gives the color of the state
 	std::cout << "\n" << __LINE__ << "   " << startWidth << "," << startHeight << "\n";  //give me the first spot of where it traversered 
+	nextState = checkExplore(currentState, image);
+	frontier.push_front(nextState);
 	if (image(currentState.column, currentState.row) == RED) {
 		image(currentState.column, currentState.row) == BLUE;
 	}
-	nextState = checkExplore(currentState, image);
-	frontier.push_front(nextState);
-	currentState = nextState;
-	
+
 	while (!isDone) {
+		std::cout << "\ncurrent state : " << currentState.column << ", " 
+			<< currentState.row; //gives me current state beg. of while loop
 		if (frontier.empty()) { //if it is empty 
 			currentState.validReturn = false; //if there is no good return, then give false, this is where it is breaking 
 			return currentState;
@@ -134,9 +134,6 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 		if (image(currentState.column, currentState.row) == RED) {
 			image(currentState.column, currentState.row) == BLUE;
 		}
-		std::cout << "\ncurrent state : "<< currentState.column<<", " << currentState.row; //gives me current state beg. of while loop 
-		
-		//check red
 
 		if (isDone(currentState, image)) { //if complete 
 			currentState.validReturn = true;
@@ -144,17 +141,13 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 			return currentState;
 		}
 		else {
+			currentState = nextState;
 			nextState = checkExplore(currentState, image); //next state of struct current data stores the new Width and Height based off current state 
 			frontier.push_front(nextState);
 			if (nextState.column == currentState.column && nextState.row == currentState.row) {  //if the next state column and row is equal to current state row and column 
-				std::cout << "\nPop out\n";
-				currentState = frontier.front(); //then front the item 
-				//if (image(currentState.column, currentState.row) == RED) { //RED a second time 
-				//	NextState = checkExplore(currentState, image);
-				//	currentState = NextState;
-				//	frontier.pushFront(currentState);
-				//}
-				//frontier.popFront(); //and remove it 
+				std::cout << "\nInside No choices Part\n";
+				currentState = explored.front(); //move current state back to previous state
+				continue;
 			}
 			else {
 				image(nextState.column, nextState.row) = BLUE; //otherwise print it as blue 
