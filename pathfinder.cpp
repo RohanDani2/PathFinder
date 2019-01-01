@@ -3,6 +3,7 @@
 #include "image.h"
 #include <iostream>
 #include "pathfinder.h"
+#include <fstream>
 #include <deque>
 
 struct coordinateData {
@@ -160,6 +161,10 @@ coordinateData breadthfirstSearch(int startWidth, int startHeight, Image<Pixel> 
 }
 
 int main(int argc, char *argv[]) {
+	std::ifstream file("maze01.png");
+	if (file.good()) {
+		std::cout << "good";
+	}
 	if (argc != 3) {
 		std::cerr << "Error: invalid number of arguments\n\n";
 		return EXIT_FAILURE;
